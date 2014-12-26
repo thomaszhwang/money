@@ -36,8 +36,10 @@ function bind_focusout() {
 }
 
 function get_similar_trans(trans_amt) {
+    var exp_or_inc = $('#exp-or-income ul li:first-child a').hasClass(
+        'selected') ? 'exp' : 'inc';
     if(trans_amt > 0) {
-        $.get('db.php?qtype=similar&amt=' + trans_amt, function(data) {
+        $.get('db.php?qtype=similar&exp_or_inc=' + exp_or_inc + '&amt=' + trans_amt, function(data) {
             render_similar_transactions($('#similar_trans'), data)
         })
     } else {
