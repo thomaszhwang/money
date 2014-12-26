@@ -1,15 +1,15 @@
 function bind_click() {
-    $('.nav-sec li a, #exp-or-income li a').click(function() {
-        $(this).parent().siblings('li').children('a').removeClass('selected');
-        $(this).addClass('selected');
-        alert($(this).html());
-    });
-
     $('#btn_add_transaction').click(function() {
         save_transaction(
             $('#input_amount'),
             $('#input_category'),
             $('#input_date'),
             $(this));
+    });
+
+    $('#exp-or-income a').click(function() {
+        $('#exp-or-income a').removeClass('selected');
+        $(this).addClass('selected');
+        init_new_transaction();
     })
 }
