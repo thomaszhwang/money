@@ -23,6 +23,8 @@ if(!$u->isLoggedIn()) {
         <script src="js/bind_focusout.js" charset="utf-8"></script>
         <script src="js/bind_keydown.js" charset="utf-8"></script>
         <script src="js/bind_keyup.js" charset="utf-8"></script>
+        <script src="js/bind_mouseenter.js" charset="utf-8"></script>
+        <script src="js/bind_mouseleave.js" charset="utf-8"></script>
         <script src="js/bind.js" charset="utf-8"></script>
         <link href='http://fonts.googleapis.com/css?family=Varela+Round|Open+Sans:300'
             rel='stylesheet' type='text/css'>
@@ -69,6 +71,7 @@ if(!$u->isLoggedIn()) {
                         <li><a class="selected" href="#">Expense</a></li>
                         <li><a href="#">Income</a></li>
                     </ul>
+                    <div class="tooltip"></div>
                 </div>
                 <div id="expense_input">
                     <div id="input_amount" class="input">

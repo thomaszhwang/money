@@ -278,3 +278,15 @@
     margin-top: -25px;
     text-align: center;
 }
+
+#exp-or-income div.tooltip {
+    position: absolute;
+    top: 40px;
+    border:1px solid #333333;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 3px;
+    display: none;
+    width:60px;
+    color:#ccc;
+}

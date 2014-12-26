@@ -5,6 +5,8 @@ $(document).ready(function() {
     bind_keydown();
     bind_keyup();
     bind_focusout();
+    bind_mouseenter();
+    bind_mouseleave();
 
     $('#btn_add_transaction').focus(function() {
         $(this).css('background', '#ccc');
