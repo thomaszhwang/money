@@ -22,7 +22,19 @@ switch ($_GET['qtype']) {
         }
         break;
     case "new_transaction":
-        print new_transaction($_POST['amount'], $_POST['category'], $_POST['date']);
+        if(isset($_POST['exp_or_inc'])
+            && isset($_POST['amount'])
+            && isset($_POST['category'])
+            && isset($_POST['date'])
+            && ($_POST['exp_or_inc'] == 'exp' || $_POST['exp_or_inc'] == 'inc')
+        ) {
+            print new_transaction(
+                $_POST['exp_or_inc'],
+                $_POST['amount'],
+                $_POST['category'],
+                $_POST['date']
+            );
+        }
         break;
     case "trans_cat":
         if (isset($_GET['exp_or_inc'])) {
@@ -82,7 +94,7 @@ function confirm_transaction($exp_or_inc, $transaction_id, $unconfirm) {
     }
 }
 
-function new_transaction($amount, $category_id, $date) {
+function new_transaction($exp_or_inc, $amount, $category_id, $date) {
     $amount = (float)$amount;
     $category_id = (int)$category_id;
 
@@ -90,8 +102,8 @@ function new_transaction($amount, $category_id, $date) {
         $parsed_date = date_parse($date);
         if(count($parsed_date['errors']) > 0) {
             return 'invalid';
-        } else if (is_valid_category_id($category_id)) {
-            if (save_verified_transaction($amount, $category_id, $date))
+        } else if (is_valid_category_id($exp_or_inc, $category_id)) {
+            if (save_verified_transaction($exp_or_inc, $amount, $category_id, $date))
                 return 'ok';
             else
                 return 'invalid';
@@ -103,15 +115,22 @@ function new_transaction($amount, $category_id, $date) {
     }
 }
 
-function save_verified_transaction($amount, $category_id, $date) {
+function save_verified_transaction($exp_or_inc, $amount, $category_id, $date) {
     $mysqli = new mysqli(MYSQL_SERVER, MYSQL_USER, MYSQL_PSWD, MYSQL_DB);
     if (mysqli_connect_errno())
         die('Failed to connect to MySQL: ' . mysqli_connect_error());
 
-    $stmt = $mysqli->prepare('
-        INSERT INTO spending (spending_subcategory_id, spending_date,
-            spending_amount, spending_confirmed) VALUES (?, ?, ?, 0);
-    ');
+    if ($exp_or_inc == 'exp') {
+        $sql = '
+            INSERT INTO spending (spending_subcategory_id, spending_date,
+                spending_amount, spending_confirmed) VALUES (?, ?, ?, 0);';
+    } else {
+        $sql = '
+            INSERT INTO income (income_category_id, income_date,
+                income_amount, income_confirmed) VALUES (?, ?, ?, 0);';
+    }
+
+    $stmt = $mysqli->prepare($sql);
     if ($mysqli->errno)
         die('MySQL Error: ' . mysqli_error($mysqli) .
             " Error Code: " . $mysqli->errno);
@@ -131,22 +150,34 @@ function save_verified_transaction($amount, $category_id, $date) {
     return $saved;
 }
 
-function is_valid_category_id($category_id) {
+function is_valid_category_id($exp_or_inc, $category_id) {
     $mysqli = new mysqli(MYSQL_SERVER, MYSQL_USER, MYSQL_PSWD, MYSQL_DB);
     if (mysqli_connect_errno())
         die('Failed to connect to MySQL: ' . mysqli_connect_error());
 
-    $stmt = $mysqli->prepare('
-        SELECT
-            COUNT(1) cnt
-        FROM
-            spending_category c
-            JOIN spending_subcategory sc
-                ON sc.category_id = c.category_id
-        WHERE 
-            c.category_user_id = ?
-            AND sc.subcategory_id = ?;
-    ');
+    if ($exp_or_inc == 'exp') {
+        $sql = '
+            SELECT
+                COUNT(1) cnt
+            FROM
+                spending_category c
+                JOIN spending_subcategory sc
+                    ON sc.category_id = c.category_id
+            WHERE 
+                c.category_user_id = ?
+                AND sc.subcategory_id = ?;';
+    } else {
+        $sql = '
+            SELECT
+                COUNT(1) cnt
+            FROM
+                income_category
+            WHERE
+                category_user_id = ?
+                AND category_id = ?;';
+    }
+
+    $stmt = $mysqli->prepare($sql);
     $stmt->bind_param('ii', $_SESSION['user_id'], $category_id);
     if ($mysqli->errno)
         die('MySQL Error: ' . mysqli_error($mysqli) .

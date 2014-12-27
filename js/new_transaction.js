@@ -106,10 +106,13 @@ function save_transaction(amount, category, date, save_button) {
 
     save_button.prop('disabled', true);
     $.post("db.php?qtype=new_transaction", {
+        exp_or_inc: $('#exp-or-income ul li:first-child a').hasClass(
+            'selected') ? 'exp' : 'inc',
         amount: amount.data('data').trans_amt,
         category: category.data('data').trans_cat_id,
         date: date.data('data').date
     }, function(result) {
+        console.log(result);
         if(result == 'ok') reset_new_transaction_form();
         save_button.prop('disabled', false);
     });
