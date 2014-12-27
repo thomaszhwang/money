@@ -104,6 +104,8 @@ function save_transaction(amount, category, date, save_button) {
         return;
     }
 
+    console.log('abc');
+
     save_button.prop('disabled', true);
     $.post("db.php?qtype=new_transaction", {
         exp_or_inc: $('#exp-or-income ul li:first-child a').hasClass(
