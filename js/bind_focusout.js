@@ -40,9 +40,9 @@ function get_similar_trans(trans_amt) {
         'selected') ? 'exp' : 'inc';
     if(trans_amt > 0) {
         $.get('db.php?qtype=similar&exp_or_inc=' + exp_or_inc + '&amt=' + trans_amt, function(data) {
-            render_similar_transactions($('#similar_trans'), data)
+            render_similar_transactions($('#similar_trans'), data, exp_or_inc)
         })
     } else {
-        render_similar_transactions($('#similar_trans'), '');
+        render_similar_transactions($('#similar_trans'), '', exp_or_inc);
     }
 }

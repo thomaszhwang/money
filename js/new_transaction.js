@@ -25,11 +25,14 @@ function render_similar_transactions(output, data, exp_or_inc) {
                 if (exp_or_inc == 'exp') {
                     tbody_tr.append($('<td class="subcategory">' + fields[3] + '</td>'));
                     tbody_tr.append($('<td class="amount">' + fields[4] + '</td>'));
-                    tbody_tr.append($(sprintf('<td class="confirmed"><input type="checkbox" %s /></td>', fields[5] == '0' ? '' : 'checked')));
+                    var is_confirmed = fields[5];
                 } else {
                     tbody_tr.append($('<td class="amount">' + fields[3] + '</td>'));
-                    tbody_tr.append($(sprintf('<td class="confirmed"><input type="checkbox" %s /></td>', fields[4] == '0' ? '' : 'checked')));
+                    var is_confirmed = fields[4];
                 }
+                var confirmed = $('<input type="checkbox" />');
+                confirmed.prop('checked', is_confirmed == '1');
+                tbody_tr.append($('<td class="confirmed"></td>').append(confirmed));
                 tbody_tr.data('data', {'transaction_id': fields[0]});
                 tbody.append(tbody_tr);
             }
