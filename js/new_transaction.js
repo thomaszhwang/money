@@ -115,6 +115,7 @@ function save_transaction(amount, category, date, save_button) {
         category: category.data('data').trans_cat_id,
         date: date.data('data').date
     }, function(result) {
+        console.log(result);
         if(result == 'ok') reset_new_transaction_form();
         save_button.prop('disabled', false);
     });
