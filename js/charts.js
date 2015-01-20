@@ -5,7 +5,7 @@ function load_expenses_chart() {
     ]
 
     configurations = {
-        margins: {top: 20, right: 30, bottom: 30, left: 40},
+        margins: {top: 20, right: 30, bottom: 30, left: 60},
         axis_font: "12px sans-serif",
         axis_line_color: "#000",
         show_x_axis: false,
