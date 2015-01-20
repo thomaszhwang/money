@@ -13,11 +13,14 @@ if(!$u->isLoggedIn()) {
         <title>Money GoBanana Today!</title>
         <script src="http://code.jquery.com/jquery-1.11.0.min.js"
             charset="utf-8"></script>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
         <script src="http://gobanana.today/DateValidator/DateValidator.js"
             charset="utf-8"></script>
+        <script src="js/plugins/BarChart.js" charset="utf-8"></script>
         <script src="js/plugins/jquery.selection.js" charset="utf-8"></script>
         <script src="js/plugins/sprintf.js" charset="utf-8"></script>
         <script src="js/new_transaction.js" charset="utf-8"></script>
+        <script src="js/charts.js" charset="utf-8"></script>
         <script src="js/verification.js" charset="utf-8"></script>
         <script src="js/bind_click.js" charset="utf-8"></script>
         <script src="js/bind_focusout.js" charset="utf-8"></script>
@@ -31,6 +34,7 @@ if(!$u->isLoggedIn()) {
         <link type="text/css" rel="stylesheet" href="css/global.css"/>
         <link type="text/css" rel="stylesheet" href="css/nav-top.css"/>
         <link type="text/css" rel="stylesheet" href="css/nav-left.css"/>
+        <link type="text/css" rel="stylesheet" href="css/main.css"/>
         <link type="text/css" rel="stylesheet" href="css/new_transaction.css"/>
     </head>
     <body>
@@ -61,6 +65,7 @@ if(!$u->isLoggedIn()) {
             </div>
         </div>
         <div id="main">
+            <svg id="expense_chart"></svg>
         </div>
         <div id="new_transaction">
             <div></div>

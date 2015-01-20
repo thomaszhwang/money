@@ -12,4 +12,6 @@ $(document).ready(function() {
         $(this).css('background', '#ccc');
         $(this).css('color', 'black');
     })
+
+    load_expenses_chart();
 });
