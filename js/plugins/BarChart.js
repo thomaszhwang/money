@@ -16,7 +16,7 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         var results = __readData(data, metadata);
 
         var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1)
+            .rangeRoundBands([0, width], .5)
             .domain(results.rows.map(function(d) {
                 return d[metadata[0].field_name];
             }));
@@ -77,14 +77,6 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
             .attr("height", function(d) { return height - y(d.total_spending); } )
             .style("fill", "steelblue");
     })
-
-    /*console.log($(".axis").length);
-
-    $(".axis path, .axis line").css({
-        
-    });
-
-    $(".x.axis path").css("display", "none");*/
 }
 
 function __readData(data, metadata) {
