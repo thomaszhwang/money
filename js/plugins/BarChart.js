@@ -8,6 +8,7 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
     if (configurations.show_x_axis != undefined)
         show_x_axis = configurations.show_x_axis;
     var y_axis_label = configurations.y_axis_label || "";
+    var column_spacing = configurations.column_spacing || 0.1;
 
     var width = $(canvas_selector).width() - margins.left - margins.right;
     var height = $(canvas_selector).height() - margins.top - margins.bottom;
@@ -16,7 +17,7 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         var results = __readData(data, metadata);
 
         var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .2)
+            .rangeRoundBands([0, width], column_spacing)
             .domain(results.rows.map(function(d) {
                 return d[metadata[0].field_name];
             }));
