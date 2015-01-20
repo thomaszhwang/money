@@ -16,7 +16,7 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         var results = __readData(data, metadata);
 
         var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .5)
+            .rangeRoundBands([0, width], .2)
             .domain(results.rows.map(function(d) {
                 return d[metadata[0].field_name];
             }));
