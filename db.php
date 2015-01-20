@@ -78,6 +78,9 @@ function load_total_spending_by_month() {
                 spending
             GROUP BY
                 1
+            ORDER BY
+                1 DESC
+            LIMIT 12
         ) s LEFT JOIN (
             SELECT
                 DATE_FORMAT(income_date, \'%Y-%m-01\') AS mon,
@@ -86,6 +89,9 @@ function load_total_spending_by_month() {
                 income
             GROUP BY
                 1
+            ORDER BY
+                1 DESC
+            LIMIT 12
         ) i ON s.mon = i.mon
         ORDER BY
             1;
