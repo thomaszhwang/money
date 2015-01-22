@@ -92,9 +92,9 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
                 .attr("class", "label")
                 .attr("font-family", data_points_label_font_family)
                 .attr("font-size", data_points_label_font_size)
-                .attr("fill", data_points_label_text_color);
+                .attr("fill", data_points_label_text_color)
                 .attr("x", function(d) { return x(d[metadata[0].field_name]) + x.rangeBand() / 2 - this.getBBox().width / 2; })
-                .attr("y", function(d) { return y(d[metadata[1].field_name]) - 2; })
+                .attr("y", function(d) { return y(d[metadata[1].field_name]) - 2; });
         }
     })
 }
