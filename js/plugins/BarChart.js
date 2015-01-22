@@ -9,6 +9,12 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         show_x_axis = configurations.show_x_axis;
     var y_axis_label = configurations.y_axis_label || "";
     var column_spacing = configurations.column_spacing || 0.1;
+    var show_data_points = true;
+    if (configurations.show_data_points != undefined)
+        show_data_points = configurations.show_data_points;
+    var data_points_label_font_family = configurations.data_points_label_font_family || "sans-serif";
+    var data_points_label_font_size = configurations.data_points_label_font_size || "12px";
+    var data_points_label_text_color = configurations.data_points_label_text_color || "#000";
 
     var width = $(canvas_selector).width() - margins.left - margins.right;
     var height = $(canvas_selector).height() - margins.top - margins.bottom;
@@ -69,14 +75,27 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
             "display": "none"
         });
 
-        chart.selectAll(".bar")
+        chart.selectAll("rect")
             .data(results.rows)
           .enter().append("rect")
-            .attr("x", function(d) { return x(d.month); })
+            .attr("x", function(d) { return x(d[metadata[0].field_name]); })
             .attr("width", x.rangeBand())
-            .attr("y", function(d) { return y(d.total_spending); })
-            .attr("height", function(d) { return height - y(d.total_spending); } )
+            .attr("y", function(d) { return y(d[metadata[1].field_name]); })
+            .attr("height", function(d) { return height - y(d[metadata[1].field_name]); })
             .style("fill", "steelblue");
+
+        if (show_data_points) {
+            chart.selectAll("text.label")
+                .data(results.rows)
+              .enter().append("text")
+                .text(function(d) { return d[metadata[1].field_name]; })
+                .attr("x", function(d) { return x(d[metadata[0].field_name]) + x.rangeBand() / 2 - this.getBBox().width / 2; })
+                .attr("y", function(d) { return y(d[metadata[1].field_name]) - 2; })
+                .attr("class", "label")
+                .attr("font-family", data_points_label_font_family)
+                .attr("font-size", data_points_label_font_size)
+                .attr("fill", data_points_label_text_color);
+        }
     })
 }
 
