@@ -40,7 +40,7 @@ function CumulativeLineChart(canvas_selector, data_path, metadata, configuration
             row[metadata[0].field_name] = parseInt(original[i][metadata[0].field_name]);
             for (j=1; j<metadata.length; j++) {
                 cumulative_totals[j-1] += original[i][metadata[j].field_name]
-                row[metadata[j].field_name] = cumulative_totals[j-1]
+                row[metadata[j].field_name] = cumulative_totals[j-1];
             }
             results["rows"].push(row);
         }
@@ -148,14 +148,18 @@ function CumulativeLineChart(canvas_selector, data_path, metadata, configuration
                 .interpolate("linear");
         }
 
+        var today = new Date();
+
         chart.append("path")
             .attr('d', __lineFunc(1)(results.rows))
             .attr("stroke", "steelblue")
             .attr("stroke-width", 2)
             .attr("fill", "none");
 
+        console.log(results.rows.slice(0, today.getDate()));
+
         chart.append("path")
-            .attr('d', __lineFunc(2)(results.rows))
+            .attr('d', __lineFunc(2)(results.rows.slice(0, today.getDate())))
             .attr("stroke", "red")
             .attr("stroke-width", 2)
             .attr("fill", "none");
