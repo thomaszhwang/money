@@ -57,8 +57,57 @@ switch ($_GET['qtype']) {
     case "total_spending_by_month":
         print load_total_spending_by_month();
         break;
+    case "spending_by_month_of_day":
+        print load_spending_by_month_of_day();
+        break;
     default:
         echo "no qtype";
+}
+
+function load_spending_by_month_of_day() {
+    $mysqli = new mysqli(MYSQL_SERVER, MYSQL_USER, MYSQL_PSWD, MYSQL_DB);
+    if (mysqli_connect_errno())
+        die('Failed to connect to MySQL: ' . mysqli_connect_error());
+    $stmt = $mysqli->prepare('
+        SELECT
+            DATE_FORMAT(spending_date, \'%d\') spending_date,
+            SUM(IF(spending_date >= DATE_SUB(DATE_FORMAT(CURDATE(),
+                \'%Y-%m-01\'), INTERVAL 1 MONTH) AND spending_date <
+                DATE_FORMAT(CURDATE(), \'%Y-%m-01\'), spending_amount, 0)
+            ) spending_amount_last_month,
+            SUM(IF(spending_date >= DATE_FORMAT(CURDATE(), \'%Y-%m-01\'),
+                spending_amount, 0)
+            ) spending_amount_this_month
+        FROM
+            spending
+        WHERE
+            spending_date >= DATE_SUB(DATE_FORMAT(CURDATE(),
+                \'%Y-%m-01\'), INTERVAL 1 MONTH)
+        GROUP BY
+            1
+        ORDER BY
+            1;
+    ');
+    if ($mysqli->errno)
+        die('MySQL Error: ' . mysqli_error($mysqli) .
+            " Error Code: " . $mysqli->errno);
+    $stmt->execute();
+    $stmt->bind_result(
+        $day_of_month,
+        $cumulative_spending_last_month,
+        $cumulative_spending_this_month
+    );
+    $return = '';
+    while($stmt->fetch()) {
+        $return = $return .
+            $day_of_month . '\t' .
+            $cumulative_spending_last_month . '\t' .
+            $cumulative_spending_this_month . '\n';
+    }
+    $stmt->close();
+    $mysqli->close();
+
+    print $return;
 }
 
 function load_total_spending_by_month() {

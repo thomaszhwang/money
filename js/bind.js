@@ -14,4 +14,5 @@ $(document).ready(function() {
     })
 
     load_expenses_chart();
+    load_monthly_cumulative_line_chart();
 });

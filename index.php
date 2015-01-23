@@ -17,6 +17,7 @@ if(!$u->isLoggedIn()) {
         <script src="http://gobanana.today/DateValidator/DateValidator.js"
             charset="utf-8"></script>
         <script src="js/plugins/BarChart.js" charset="utf-8"></script>
+        <script src="js/plugins/CumulativeLineChart.js" charset="utf-8"></script>
         <script src="js/plugins/jquery.selection.js" charset="utf-8"></script>
         <script src="js/plugins/sprintf.js" charset="utf-8"></script>
         <script src="js/new_transaction.js" charset="utf-8"></script>
@@ -66,6 +67,7 @@ if(!$u->isLoggedIn()) {
         </div>
         <div id="main">
             <svg id="expense_chart"></svg>
+            <svg id="monthly_cumulative_line_chart"></svg>
         </div>
         <div id="new_transaction">
             <div></div>

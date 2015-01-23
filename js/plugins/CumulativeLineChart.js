@@ -1,9 +1,10 @@
-
-function BarChart(canvas_selector, data_path, metadata, configurations) {
+function CumulativeLineChart(canvas_selector, data_path, metadata, configurations) {
     function __readData(data, metadata) {
         var results = {};
         results["rows"] = [];
-        
+
+        var last_month_id;
+        var original = [];
         var splitted_rows = data.split("\\n");
         $.each(splitted_rows, function(i, raw_row) {
             raw_row = raw_row.trim();
@@ -20,15 +21,33 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
                             row[field_name] = +raw_field;
                         else
                             throw "unrecognized data type " + data_type;
+
+                        if (field_name = 'date' && last_month_id == undefined) {
+                            last_month_id = parseInt(raw_field.substring(5, 7));
+                        }
                     }
                 })
-                results["rows"].push(row);
+                original.push(row);
             }
         })
 
+        cumulative_totals = [];
+        for (i=0; i<metadata.length-1; i++) {
+            cumulative_totals[i] = 0;
+        }
+        for (i=0; i<original.length; i++) {
+            var row = {}
+            row[metadata[0].field_name] = parseInt(original[i][metadata[0].field_name]);
+            for (j=1; j<metadata.length; j++) {
+                cumulative_totals[j-1] += original[i][metadata[j].field_name]
+                row[metadata[j].field_name] = cumulative_totals[j-1]
+            }
+            results["rows"].push(row);
+        }
+
         return results;
     }
-    
+
     var margins = configurations.margins || {
         top: 20, right: 30, bottom: 30, left: 40
     };
@@ -39,13 +58,6 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         show_x_axis = configurations.show_x_axis;
     var y_axis_label = configurations.y_axis_label || "";
     var column_spacing = configurations.column_spacing || 0.1;
-    var show_data_points = true;
-    if (configurations.show_data_points != undefined)
-        show_data_points = configurations.show_data_points;
-    var data_points_label_font_family = configurations.data_points_label_font_family || "sans-serif";
-    var data_points_label_font_size = configurations.data_points_label_font_size || "12px";
-    var data_points_label_text_color = configurations.data_points_label_text_color || "#000";
-
     var width = $(canvas_selector).width() - margins.left - margins.right;
     var height = $(canvas_selector).height() - margins.top - margins.bottom;
 
@@ -53,10 +65,9 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
         var results = __readData(data, metadata);
 
         var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], column_spacing)
-            .domain(results.rows.map(function(d) {
-                return d[metadata[0].field_name];
-            }));
+            .rangeRoundPoints([0, width])
+            .domain([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -66,7 +77,9 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
             .range([height, 0])
             .domain([0, Math.max.apply(Math, results.rows.map(function(d) {
                 return d[metadata[1].field_name];
-            }))])
+            }).concat(results.rows.map(function(d) {
+                return d[metadata[2].field_name];
+            })))])
 
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -79,7 +92,7 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
           .append("g")
             .attr("transform",
                 "translate(" + margins.left + ", " + margins.top + ")");
-    
+
         chart.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
@@ -105,26 +118,46 @@ function BarChart(canvas_selector, data_path, metadata, configurations) {
             "display": "none"
         });
 
-        chart.selectAll("rect")
+        chart.selectAll("circle.line1")
             .data(results.rows)
-          .enter().append("rect")
-            .attr("x", function(d) { return x(d[metadata[0].field_name]); })
-            .attr("width", x.rangeBand())
-            .attr("y", function(d) { return y(d[metadata[1].field_name]); })
-            .attr("height", function(d) { return height - y(d[metadata[1].field_name]); })
-            .style("fill", "steelblue");
+          .enter().append("circle")
+            .attr("class", "line1")
+            .attr("cx", function(d) { return x(d[metadata[0].field_name]); })
+            .attr("cy", function(d) { return y(d[metadata[1].field_name]); })
+            .attr("r", 3)
+            .attr("fill", "steelblue");
 
-        if (show_data_points) {
-            chart.selectAll("text.label")
-                .data(results.rows)
-              .enter().append("text")
-                .text(function(d) { return d[metadata[1].field_name]; })
-                .attr("class", "label")
-                .attr("font-family", data_points_label_font_family)
-                .attr("font-size", data_points_label_font_size)
-                .attr("fill", data_points_label_text_color)
-                .attr("x", function(d) { return x(d[metadata[0].field_name]) + x.rangeBand() / 2 - this.getBBox().width / 2; })
-                .attr("y", function(d) { return y(d[metadata[1].field_name]) - 2; });
+        chart.selectAll("circle.line2")
+            .data(results.rows)
+          .enter().append("circle")
+            .attr("class", "line1")
+            .attr("cx", function(d) { return x(d[metadata[0].field_name]); })
+            .attr("cy", function(d) { return y(d[metadata[2].field_name]); })
+            .attr("r", 3)
+            .attr("fill", "red");
+
+        var lineFunc = d3.svg.line()
+            .x(function(d) { return x(d[metadata[0].field_name]); })
+            .y(function(d) { return y(d[metadata[1].field_name]); })
+            .interpolate("linear");
+
+        function __lineFunc(field_idx) {
+            return d3.svg.line()
+                .x(function(d) { return x(d[metadata[0].field_name]); })
+                .y(function(d) { return y(d[metadata[field_idx].field_name]); })
+                .interpolate("linear");
         }
+
+        chart.append("path")
+            .attr('d', __lineFunc(1)(results.rows))
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+
+        chart.append("path")
+            .attr('d', __lineFunc(2)(results.rows))
+            .attr("stroke", "red")
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
     })
 }
